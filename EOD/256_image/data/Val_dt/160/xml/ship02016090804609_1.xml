@@ -1,0 +1,26 @@
+<annotation>
+    <folder>img</folder>
+    <filename>ship02016090804609_1.jpg</filename>
+    <path>/media/data2/dataset/SSDD/256/Val_dt/160/img/ship02016090804609_1.jpg</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>160</width>
+        <height>160</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>ship</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>120</xmin>
+            <ymin>19</ymin>
+            <xmax>137</xmax>
+            <ymax>101</ymax>
+        </bndbox>
+    </object>
+</annotation>

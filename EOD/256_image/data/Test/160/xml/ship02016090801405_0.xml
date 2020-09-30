@@ -1,0 +1,15 @@
+<annotation>
+    <folder>img</folder>
+    <filename>ship02016090801405_0.jpg</filename>
+    <path>/media/data2/dataset/SSDD/256/Test/160/img/ship02016090801405_0.jpg</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>160</width>
+        <height>160</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+
+</annotation>
