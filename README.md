@@ -2,8 +2,9 @@
  Object Detection for SAR images
 
 Yolov3: https://github.com/eriklindernoren/PyTorch-YOLOv3
-
+Yolov5: https://github.com/ultralytics/yolov5
 EfficientObjectDetection: https://github.com/uzkent/EfficientObjectDetection
+mmdetection: https://github.com/open-mmlab/mmdetection
 
 
 # SAROD: Efficient End-to-end Object Detection on SAR Images withReinforcement Learning
@@ -27,22 +28,23 @@ A example script for downloading the testset is as follows:
 ```
 # Download the dataset
 cd dataset
-bash download_PGGAN.sh
-bash download_StarGAN.sh
-bash download_StyleGAN.sh
-bash download_StyleGAN2.sh
-bash download_PGGAN_lsun_bedroom.sh
-bash download_PGGAN_lsun_bird.sh
+bash download_HRSID_cropped.sh
 cd ..
 ```
 
 ## Download pre-trained model weights
-The pretrained weights can be downloaded by running the file in dataset or [TBA](TBA).
+The pretrained weights can be downloaded by running the files or [TBA](TBA).
 
 ```
 # Download the pre-trained weights
 cd weights
-bash download_weights.sh
+bash download_SAROD_RL_weights.sh
+bash download_yolov5_480_weights.sh
+bash download_yolov5_96_weights.sh
+bash download_yolov3_480_weights.sh
+bash download_yolov3_96_weights.sh
+bash download_retinanet_weights.sh
+bash download_faster_rcnn_weights.sh
 cd ..
 ```
 
