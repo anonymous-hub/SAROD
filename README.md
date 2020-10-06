@@ -62,11 +62,9 @@ pip install -r requirements.txt
 
 ## Train
 ```
-
+!python train.py --epochs 50 --detector_batch_size 32 --device 0 --test_epoch 10 --eval_epoch 5
 ```
 
 ## Evaluation
-```
-
-```
+refer to demo/Demo.ipynb
 
