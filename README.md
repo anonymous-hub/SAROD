@@ -67,7 +67,4 @@ pip install -r requirements.txt
 
 ## Evaluation
 refer to demo/Demo.ipynb
-```
-
-```
 
