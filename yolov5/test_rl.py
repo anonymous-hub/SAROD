@@ -270,7 +270,7 @@ def test(data,
     print('{} result - precison: {}'.format(imgsz, mp))
     print('{} result - recall: {}'.format(imgsz, mr))
 
-    save_path = task + '_' + str(imgsz) + '_results.txt'
+    save_path = 'save/' + task + '_' + str(imgsz) + '_results.txt'
     with open(save_path, 'a') as f:
         f.write(str(map50)+' '+str(mp)+' '+str(mr)+'\n')
 

@@ -1,12 +1,3 @@
-"""
-How to train the Policy Network :
-    python train_backup.py
-        --lr 1e-4
-        --cv_dir checkpoint directory
-        --batch_size 512 (more is better)
-        --data_dir directory to contain csv file
-        --alpha 0.6
-"""
 import os
 import torch
 import torch.utils.data as torchdata
@@ -50,19 +41,19 @@ class EfficientOD():
         print("GPU device for EfficientOD: ", use_cuda)
 
         if not os.path.exists(self.opt.cv_dir):
+            print(self.opt.cv_dir)
             os.makedirs(self.opt.cv_dir)
         # utils_ete.save_args(__file__, self.opt)
 
         self.agent = utils_ete.get_model(num_actions)
         self.critic = utils_ete.critic_model(1)
 
-        # # ---- Load the pre-trained model ----------------------
-        # start_epoch = 0
-        # if args.load is not None:
-        #     checkpoint = torch.load(args.load)
-        #     agent.load_state_dict(checkpoint['agent'])
-        #     start_epoch = checkpoint['epoch'] + 1
-        #     print('loaded agent from %s' % args.load)
+        # ---- Load the pre-trained model ----------------------
+        if self.opt.load is not None:
+            path = os.path.join('weights', self.opt.load)
+            checkpoint = torch.load(path)
+            self.agent.load_state_dict(checkpoint['agent'])
+            print('loaded agent from %s' % opt.load)
 
         # Parallelize the models if multiple GPUs available - Important for Large Batch Size to Reduce Variance
         if self.opt.parallel:
@@ -200,7 +191,7 @@ class EfficientOD():
             print('Train: %d | Rw: %.6f | S: %.3f | V: %.3f | #: %d' % (epoch, reward, sparsity, variance, len(policy_set)))
 
             result = epoch, reward.cpu().item(), sparsity.cpu().item(), variance.cpu().item(), map50, sum(efficiency)/len(efficiency)
-            with open('rl_train.txt', 'a') as f:
+            with open(self.opt.cv_dir+'/rl_train.txt', 'a') as f:
                 f.write(str(result) + '\n')
 
             # save the model --- agent
@@ -211,8 +202,7 @@ class EfficientOD():
                 'reward': reward,
             }
             if self.epoch % 10 == 0:
-                torch.save(state, 'EfficientObjectDetection/' + self.opt.cv_dir + '/ckpt_E_%d_R_%.2E' % (
-                self.epoch, reward))
+                torch.save(state, self.opt.cv_dir + '/ckpt_E_{}'.format(self.epoch))
 
 
     def eval(self, epoch, test_fine, test_coarse):
@@ -291,18 +281,18 @@ class EfficientOD():
         print('RL Eval - Rw: %.4f | S: %.3f | V: %.3f | #: %d\n' % (reward, sparsity, variance, len(policy_set)))
 
         result = epoch, reward.cpu().item(), sparsity.cpu().item(), variance.cpu().item(), map50, sum(efficiency)/len(efficiency)
-        with open('rl_eval.txt', 'a') as f:
+        with open(self.opt.cv_dir+'/rl_eval.txt', 'a') as f:
             f.write(str(result)+'\n')
 
-        # save the model --- agent
-        agent_state_dict = self.agent.module.state_dict() if self.opt.parallel else self.agent.state_dict()
-        state = {
-          'agent': agent_state_dict,
-          'epoch': self.epoch,
-          'reward': reward,
-        }
-        if self.epoch % 5 == 0:
-            torch.save(state, 'EfficientObjectDetection/'+self.opt.cv_dir+'/ckpt_E_%d_R_%.2E'%(self.epoch, reward))
+        # # save the model --- agent
+        # agent_state_dict = self.agent.module.state_dict() if self.opt.parallel else self.agent.state_dict()
+        # state = {
+        #   'agent': agent_state_dict,
+        #   'epoch': self.epoch,
+        #   'reward': reward,
+        # }
+        # if self.epoch % 5 == 0:
+        #     torch.save(state, self.opt.cv_dir+'/ckpt_E_%d_R_%.2E'%(self.epoch, reward))
 
 
     def test(self, epoch, test_fine, test_coarse):
@@ -379,5 +369,5 @@ class EfficientOD():
         print('RL Test - Rw: %.4f | S: %.3f | V: %.3f | #: %d\n' % (reward, sparsity, variance, len(policy_set)))
 
         result = epoch, reward.cpu().item(), sparsity.cpu().item(), variance.cpu().item(), map50, sum(efficiency)/len(efficiency)
-        with open('rl_test.txt', 'a') as f:
+        with open(self.opt.cv_dir+'/rl_test.txt', 'a') as f:
             f.write(str(result)+'\n')

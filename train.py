@@ -14,6 +14,11 @@ if __name__ == '__main__':
     parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--test_epoch', type=int, default=10)
     parser.add_argument('--eval_epoch', type=int, default=2)
+    parser.add_argument('--step_batch_size', type=int, default=100)
+    parser.add_argument('--save_path', default='save')
+    parser.add_argument('--rl_weight', default=None)
+    parser.add_argument('--h_detector_weight', default=' ')
+    parser.add_argument('--l_detector_weight', default=' ')
     opt = parser.parse_args()
 
     fine_opt_tr = easydict.EasyDict({
@@ -31,7 +36,7 @@ if __name__ == '__main__':
         "evolve": False,
         "bucket": '',
         "cache_images": True,
-        "weights": " ",
+        "weights": opt.h_detector_weight,
         "name": "yolov5x_800_480_200epoch",
         "device": opt.device,
         "multi_scale": False,
@@ -63,7 +68,7 @@ if __name__ == '__main__':
         "evolve": False,
         "bucket": '',
         "cache_images": True,
-        "weights": " ",
+        "weights": opt.l_detector_weight,
         "name": "yolov5x_800_96_200epoch",
         "device": opt.device,
         "multi_scale": False,
@@ -83,10 +88,9 @@ if __name__ == '__main__':
     EfficientOD_opt = easydict.EasyDict({
         "gpu_id": opt.device,
         "lr": 1e-3,
-        "load": None,
-        "cv_dir": "cv/0/",
+        "cv_dir": opt.save_path,
         "batch_size": 1,
-        "step_batch_size": 100,
+        "step_batch_size": opt.step_batch_size,
         "img_size": 480,
         "epoch_step": 20,
         "max_epochs": opt.epochs,
@@ -94,7 +98,8 @@ if __name__ == '__main__':
         "parallel": False,
         "alpha": 0.8,
         "beta": 0.1,
-        "sigma": 0.5
+        "sigma": 0.5,
+        "load": opt.rl_weight
     })
 
 

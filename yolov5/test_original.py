@@ -1,8 +1,8 @@
 import argparse
 import json
 
-from models.experimental import *
-from utils.datasets import *
+from yolov5.models.experimental import *
+from yolov5.utils.datasets import *
 
 
 def test(data,

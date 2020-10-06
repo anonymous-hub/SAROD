@@ -1,7 +1,7 @@
 import argparse
 from copy import deepcopy
 
-from models.experimental import *
+from yolov5.models.experimental import *
 
 
 class Detect(nn.Module):

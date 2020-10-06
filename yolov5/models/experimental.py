@@ -1,7 +1,7 @@
 # This file contains experimental modules
 
-from models.common import *
-from utils import google_utils
+from yolov5.models.common import *
+from yolov5.utils import google_utils
 
 
 class CrossConv(nn.Module):
