@@ -53,3 +53,13 @@ cd ..
 pip install -r requirements.txt
 ```
 
+## Train
+```
+
+```
+
+## Evaluation
+```
+
+```
+
