@@ -38,19 +38,19 @@ The pretrained weights can be downloaded by running the files or [here](https://
 ```
 # Download the pre-trained SAROD weights
 cd weights
-bash download_SAROD_RL_weights.sh
-bash download_yolov5_480_weights.sh
-bash download_yolov5_96_weights.sh
+bash download_SAROD_RL_weight.sh
+bash download_yolov5_480_weight.sh
+bash download_yolov5_96_weight.sh
 cd ..
 ```
 
 ```
 # Download the pre-trained baseline weights
 cd weights
-bash download_yolov3_480_weights.sh
-bash download_yolov3_96_weights.sh
-bash download_retinanet_weights.sh
-bash download_faster_rcnn_weights.sh
+bash download_yolov3_480_weight.sh
+bash download_yolov3_96_weight.sh
+bash download_retinanet_weight.sh
+bash download_faster_rcnn_weight.sh
 cd ..
 ```
 
