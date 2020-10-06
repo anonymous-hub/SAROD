@@ -5,10 +5,9 @@ Yolov3: https://github.com/eriklindernoren/PyTorch-YOLOv3
 
 Yolov5: https://github.com/ultralytics/yolov5
 
-EfficientObjectDetection: https://github.com/uzkent/EfficientObjectDetection
-
 mmdetection: https://github.com/open-mmlab/mmdetection
 
+EfficientObjectDetection: https://github.com/uzkent/EfficientObjectDetection
 
 
 ## Overview of our framework.
