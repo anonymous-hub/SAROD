@@ -1,7 +1,3 @@
 #!/bin/bash
 
-wget -O weights.zip --no-check-certificate https://skku0-my.sharepoint.com/:u:/g/personal/byo7000_skku_edu/ESF_WuwUau5Mrl3hdteSChcBX3mBt8SP1Ajq-CmkEN7MlQ?download=1
-
-unzip weights.zip
-
-rm weights.zip
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1-tT8jgQWCVZxiVs0WITExk2FETv9khw4' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1-tT8jgQWCVZxiVs0WITExk2FETv9khw4" -O yolov3_96.pth && rm -rf /tmp/cookies.txt
