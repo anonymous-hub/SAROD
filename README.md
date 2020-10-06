@@ -23,7 +23,7 @@ git clone https://github.com/anonymous-hub/SAROD
 ## Dataset
 HRSID Dataset can be downloaded in [here](https://github.com/chaozhong2010/HRSID)
 
-Pre-Processed dataset for the result can be downloaded by running the file or [TBA](TBA).
+Pre-Processed dataset for the result can be downloaded by running the file or [here](https://drive.google.com/file/d/179XJTHn93KVHzOyPy4grE808Oaxf4jDe/view?usp=sharing).
 
 A example script for downloading the testset is as follows:
 ```
