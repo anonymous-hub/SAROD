@@ -1,5 +1,0 @@
-classes=1
-train=data/custom96/train.txt
-valid=data/custom96/valid.txt
-test=data/custom96/test.txt
-names=data/custom96/classes.names
