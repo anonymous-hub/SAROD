@@ -34,7 +34,7 @@ cd ..
 ```
 
 ## Download pre-trained model weights
-The pretrained weights can be downloaded by running the files or [TBA](TBA).
+The pretrained weights can be downloaded by running the files or [here](https://drive.google.com/drive/folders/15bVFQ-rgN6r8ApoiOhu2XEl11-r4_oc6?usp=sharing).
 
 ```
 # Download the pre-trained weights
