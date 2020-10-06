@@ -1,5 +1,0 @@
-pillow==7.0.0
-tqdm
-opencv-python==4.2.0.34
-pandas
-matplotlib
