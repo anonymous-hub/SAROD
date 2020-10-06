@@ -61,11 +61,11 @@ pip install -r requirements.txt
 ```
 
 ## Train
-refer to 'training_demo.ipynb'
+refer to demo_'training.ipynb'
 ```
 !python train.py --epochs 50 --detector_batch_size 32 --device 0 --test_epoch 10 --eval_epoch 5
 ```
 
 ## Evaluation
-refer to 'evaluation_demo.ipynb'
+refer to 'demo_evaluation.ipynb'
 
