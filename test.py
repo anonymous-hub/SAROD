@@ -102,13 +102,28 @@ if __name__ == '__main__':
         "test_path": opt.test_path
     })
 
-    rl_agent = EfficientOD(EfficientOD_opt)
+
     fine_detector = yolov5(fine_opt_tr, fine_opt_eval)
     coarse_detector = yolov5(coarse_opt_tr, coarse_opt_eval)
+    rl_agent = EfficientOD(EfficientOD_opt)
 
-    fine_detector.main(0)
-    coarse_detector.main(0)
+    epochs = opt.epochs
 
-    rl_agent.test_wip(fine_detector, coarse_detector)
+    fine_detector.main(epochs)
+    coarse_detector.main(epochs)
+
+    for e in range(epochs):
+        # fine_detector.train(e)
+        # coarse_detector.train(e)
+        # fine_eval_results = fine_detector.eval('train')
+        # coarse_eval_results = coarse_detector.eval('train')
+        # rl_agent.train(e, fine_eval_results, coarse_eval_results)
+        # if e % opt.eval_epoch == 0:
+        #     eval_fine = fine_detector.eval('val')
+        #     eval_coarse = coarse_detector.eval('val')
+        #     rl_agent.eval(e, eval_fine, eval_coarse)
+        test_fine = fine_detector.eval('test')
+        test_coarse = coarse_detector.eval('test')
+        rl_agent.test(e, test_fine, test_coarse)
 
 
