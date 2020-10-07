@@ -2,110 +2,113 @@ import easydict
 from multiprocessing import Process
 import yaml
 from pathlib import Path
+import argparse
 
 from yolov5.train_dt import *
-from EfficientObjectDetection.train_800 import *
+from EfficientObjectDetection.train_new_reward import *
 
-EfficientOD_opt = easydict.EasyDict({
-    "gpu_id": '1',
-    "lr": 1e-3,
-    "load": "EfficientObjectDetection/cv/tmp/ckpt_E_0_R_2.94E-01",
-    "cv_dir": "cv/test/",
-    "batch_size": 1,
-    "img_size": 480,
-    "epoch_step": 10000,
-    "max_epochs": 300,
-    "num_workers": 0,
-    "test_epoch": 5,
-    "parallel": False,
-    "alpha": 0.8,
-    "beta": 0.1,
-    "sigma": 0.5
-})
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--detector_batch_size', type=int, default=32, help="Total batch size for all gpus.")
+    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--test_epoch', type=int, default=10)
+    parser.add_argument('--eval_epoch', type=int, default=2)
+    parser.add_argument('--step_batch_size', type=int, default=100)
+    parser.add_argument('--save_path', default='save')
+    parser.add_argument('--rl_weight', default=None)
+    parser.add_argument('--h_detector_weight', default=' ')
+    parser.add_argument('--l_detector_weight', default=' ')
+    parser.add_argument('--test_path', default=None)
+    opt = parser.parse_args()
 
-fine_opt_tr = easydict.EasyDict({
-    "cfg": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/models/yolov5x_custom.yaml",
-    "data": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/data/HRSID_800_od.yaml",
-    "hyp": '',
-    "epochs": 1,
-    "batch_size": 32,
-    "img_size": [480, 480],
-    "rect": False,
-    "resume": False,
-    "nosave": False,
-    "notest": True,
-    "noautoanchor": True,
-    "evolve": False,
-    "bucket": '',
-    "cache_images": False,
-    "weights": " ",
-    "name": "yolov5x_800_480_200epoch",
-    "device": '1',
-    "multi_scale": False,
-    "single_cls": True,
-    "sync_bn": False,
-    "local_rank": -1
-})
+    fine_opt_tr = easydict.EasyDict({
+        "cfg": "yolov5/models/yolov5x_custom.yaml",
+        "data": "yolov5/data/HRSID_800_od.yaml",
+        "hyp": '',
+        "epochs": opt.epochs,
+        "batch_size": opt.detector_batch_size,
+        "img_size": [480, 480],
+        "rect": False,
+        "resume": False,
+        "nosave": False,
+        "notest": True,
+        "noautoanchor": True,
+        "evolve": False,
+        "bucket": '',
+        "cache_images": False,
+        "weights": 'weights/'+opt.h_detector_weight,
+        "name": "yolov5x_800_480_200epoch",
+        "device": opt.device,
+        "multi_scale": False,
+        "single_cls": True,
+        "sync_bn": False,
+        "local_rank": -1
+    })
 
-fine_opt_eval = easydict.EasyDict({
-    "data": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/data/HRSID_800_rl.yaml",
-    "batch_size": 1,
-    "conf_thres": 0.001,
-    "iou_thres": 0.6  # for NMS
-})
+    fine_opt_eval = easydict.EasyDict({
+        "data": "yolov5/data/HRSID_800_rl.yaml",
+        "batch_size": 1,
+        "conf_thres": 0.001,
+        "iou_thres": 0.6  # for NMS
+    })
 
-coarse_opt_tr = easydict.EasyDict({
-    "cfg": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/models/yolov5x_custom.yaml",
-    "data": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/data/HRSID_800_od.yaml",
-    "hyp": '',
-    "epochs": 1,
-    "batch_size": 32,
-    "img_size": [96, 96],
-    "rect": False,
-    "resume": False,
-    "nosave": False,
-    "notest": True,
-    "noautoanchor": True,
-    "evolve": False,
-    "bucket": '',
-    "cache_images": False,
-    "weights": " ",
-    "name": "yolov5x_800_96_200epoch",
-    "device": '1',
-    "multi_scale": False,
-    "single_cls": True,
-    "sync_bn": False,
-    "local_rank": -1
-})
+    coarse_opt_tr = easydict.EasyDict({
+        "cfg": "yolov5/models/yolov5x_custom.yaml",
+        "data": "yolov5/data/HRSID_800_od.yaml",
+        "hyp": '',
+        "epochs": opt.epochs,
+        "batch_size": opt.detector_batch_size,
+        "img_size": [96, 96],
+        "rect": False,
+        "resume": False,
+        "nosave": False,
+        "notest": True,
+        "noautoanchor": True,
+        "evolve": False,
+        "bucket": '',
+        "cache_images": False,
+        "weights": 'weights/'+opt.l_detector_weight,
+        "name": "yolov5x_800_96_200epoch",
+        "device": opt.device,
+        "multi_scale": False,
+        "single_cls": True,
+        "sync_bn": False,
+        "local_rank": -1
+    })
 
-coarse_opt_eval = easydict.EasyDict({
-    "data": "/home/kang/SAR_OD/EfficientOD_WACV/yolov5/data/HRSID_800_rl.yaml",
-    "batch_size": 1,
-    "conf_thres": 0.001,
-    "iou_thres": 0.6  # for NMS
-})
+    coarse_opt_eval = easydict.EasyDict({
+        "data": "yolov5/data/HRSID_800_rl.yaml",
+        "batch_size": 1,
+        "conf_thres": 0.001,
+        "iou_thres": 0.6  # for NMS
+    })
 
-rl_agent = EfficientOD(EfficientOD_opt)
+    EfficientOD_opt = easydict.EasyDict({
+        "gpu_id": opt.device,
+        "lr": 1e-3,
+        "cv_dir": opt.save_path,
+        "batch_size": 1,
+        "step_batch_size": opt.step_batch_size,
+        "img_size": 480,
+        "epoch_step": 20,
+        "max_epochs": opt.epochs,
+        "num_workers": 0,
+        "parallel": False,
+        "alpha": 0.8,
+        "beta": 0.1,
+        "sigma": 0.5,
+        "load": opt.rl_weight,
+        "test_path": opt.test_path
+    })
 
-fine_detector = yolov5(fine_opt_tr, fine_opt_eval)
-coarse_detector = yolov5(coarse_opt_tr, coarse_opt_eval)
+    rl_agent = EfficientOD(EfficientOD_opt)
+    fine_detector = yolov5(fine_opt_tr, fine_opt_eval)
+    coarse_detector = yolov5(coarse_opt_tr, coarse_opt_eval)
 
-fine_detector.main(0)
-coarse_detector.main(0)
+    fine_detector.main(0)
+    coarse_detector.main(0)
 
-# policy, path
-returns = rl_agent.test()
-
-coarse_weight = '/home/kang/SAR_OD/EfficientOD_WACV/runs/exp1_yolov5x_800_96_200epoch/weights/last_yolov5x_800_96_200epoch.pt'
-fine_weight = '/home/kang/SAR_OD/EfficientOD_WACV/runs/exp0_yolov5x_800_480_200epoch/weights/last_yolov5x_800_480_200epoch.pt'
-
-for (policy, path) in returns:
-    for ind, i in enumerate(policy):
-        path = path[0].replace('test', 'rl_ver/test').replace('.jpg', '_' + str(ind) + '.jpg')
-        if i == 0:
-            c_result = coarse_detector.test(coarse_weight, path, '1')
-            print(c_result)
-        if i == 1:
-            f_result = fine_detector.test(fine_weight, path, '1')
+    rl_agent.test_wip(fine_detector, coarse_detector)
 
 

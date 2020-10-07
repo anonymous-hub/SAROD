@@ -14,6 +14,7 @@ from yolov5.models.yolo import Model
 from yolov5.utils import google_utils
 from yolov5.utils.datasets import *
 from yolov5.utils.utils import *
+from yolov5.models.experimental import *
 
 mixed_precision = True
 try:  # Mixed precision training https://github.com/NVIDIA/apex
@@ -61,7 +62,7 @@ class yolov5():
         self.opt = opt
         self.device = device
 
-        print(f'Hyperparameters {hyp}')
+        # print(f'Hyperparameters {hyp}')
         self.log_dir = self.tb_writer.log_dir if self.tb_writer else 'runs/evolution'  # run directory
         self.wdir = str(Path(self.log_dir) / 'weights') + os.sep  # weights directory
         os.makedirs(self.wdir, exist_ok=True)
@@ -70,6 +71,8 @@ class yolov5():
         self.results_file = self.log_dir + os.sep + 'results.txt'
         self.epochs, batch_size, self.total_batch_size, weights, rank = \
             self.opt.epochs, self.opt.batch_size, self.opt.total_batch_size, self.opt.weights, self.opt.local_rank
+
+
         # TODO: Init DDP logging. Only the first process is allowed to log.
         # Since I see lots of print here, the logging configuration is skipped here. We may see repeated outputs.
 
@@ -178,6 +181,7 @@ class yolov5():
         # DP mode
         if self.device.type != 'cpu' and rank == -1 and torch.cuda.device_count() > 1:
             self.model = torch.nn.DataParallel(self.model)
+            print('\nself.model', self.model)
 
         # SyncBatchNorm
         if self.opt.sync_bn and self.device.type != 'cpu' and rank != -1:
@@ -185,6 +189,8 @@ class yolov5():
             print('Using SyncBatchNorm()')
 
         # Exponential moving average
+        self.model = attempt_load(weights, map_location=device)  # load FP32 model
+
         self.ema = torch_utils.ModelEMA(self.model) if rank in [-1, 0] else None
 
         # DDP mode
@@ -444,15 +450,12 @@ class yolov5():
 
         return results
 
-    # def test(self, weight, task, test_device):
-    #     results, _, _ = test.test(self.opt.data, batch_size=self.total_batch_size,
-    #                                           imgsz=self.imgsz_test,
-    #                                           model=self.ema.ema.module if hasattr(self.ema.ema,
-    #                                                                                'module') else self.ema.ema,
-    #                                           single_cls=self.opt.single_cls,
-    #                                           dataloader=self.testloader)
-    #
-    #     return results
+    def test(self, inputs, label_path, ind):
+        results = test.test_rl(inputs, label_path, ind, weights=self.opt.weights, device=self.opt.device, batch_size=self.total_batch_size, imgsz=self.imgsz_test,
+                                     model=self.ema.ema.module if hasattr(self.ema.ema, 'module') else self.ema.ema,
+                                     single_cls=self.opt.single_cls)
+
+        return results
 
     def main(self, epochs):
         self.last = get_latest_run() if self.opt.resume == 'get_last' else self.opt.resume  # resume from most recent run
@@ -483,12 +486,12 @@ class yolov5():
             self.opt.world_size = dist.get_world_size()
             assert self.opt.batch_size % self.opt.world_size == 0, "Batch size is not a multiple of the number of devices given!"
             self.opt.batch_size = self.opt.total_batch_size // self.opt.world_size
-        print(self.opt)
+        # print(self.opt)
 
         # Train
         if not self.opt.evolve:
             if self.opt.local_rank in [-1, 0]:
-                print('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
+                # print('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
                 self.tb_writer = SummaryWriter(log_dir=increment_dir('runs/exp', self.opt.name))
             else:
                 self.tb_writer = None

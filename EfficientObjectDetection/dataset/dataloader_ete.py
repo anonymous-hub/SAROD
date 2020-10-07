@@ -99,6 +99,33 @@ class CustomDatasetFromImages(Dataset):
         return int(self.data_len)
 
 
+class CustomDatasetFromImages_test(Dataset):
+    def __init__(self, img_path, transform):
+        # Transforms
+        self.transforms = transform
+
+        # img list
+        self.img_path = img_path
+        self.img_list = os.listdir(img_path)
+
+    def __len__(self):
+        return len(self.img_list)
+
+    def __getitem__(self, index):
+
+        img_as_img = Image.open(os.path.join(self.img_path, self.img_list[index]))
+
+        # Transform the image
+        img_as_tensor = self.transforms(img_as_img)
+
+        # Get label
+        label_path = os.path.join(self.img_path.replace('images', 'labels'), self.img_list[index].replace('.jpg', '.txt'))
+
+        return img_as_tensor, label_path
+
+
+
+
 class CustomDatasetFromImages_timetest(Dataset):
     def __init__(self, csv_path, transform):
         """

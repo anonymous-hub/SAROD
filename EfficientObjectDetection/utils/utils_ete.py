@@ -7,7 +7,7 @@ import shutil
 import json
 
 from EfficientObjectDetection.utils import utils_detector
-from EfficientObjectDetection.dataset.dataloader_ete import CustomDatasetFromImages, CustomDatasetFromImages_timetest
+from EfficientObjectDetection.dataset.dataloader_ete import CustomDatasetFromImages, CustomDatasetFromImages_timetest, CustomDatasetFromImages_test
 from EfficientObjectDetection.constants import base_dir_groundtruth, base_dir_detections_cd, base_dir_detections_fd, base_dir_metric_cd, base_dir_metric_fd
 from EfficientObjectDetection.constants import num_windows, img_size_fd, img_size_cd
 
@@ -140,8 +140,13 @@ def get_dataset(img_size, fine_data, coarse_data, task):
         trainset = CustomDatasetFromImages(fine_data, coarse_data, transform_train)
     else:
         trainset = CustomDatasetFromImages(fine_data, coarse_data, transform_test)
-
     return trainset
+
+def get_dataset_test(img_size, img_path):
+    transform_train, transform_test = get_transforms(img_size)
+    trainset = CustomDatasetFromImages_test(img_path, transform_test)
+    return trainset
+
 
 def get_dataset_timetest(img_size, root='data/'):
     transform_train, transform_test = get_transforms(img_size)

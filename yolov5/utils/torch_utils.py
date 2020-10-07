@@ -30,23 +30,20 @@ def select_device(device='', apex=False, batch_size=None):
         assert torch.cuda.is_available(), 'CUDA unavailable, invalid device %s requested' % device  # check availablity
 
     cuda = False if cpu_request else torch.cuda.is_available()
-    if cuda:
-        c = 1024 ** 2  # bytes to MB
-        ng = torch.cuda.device_count()
-        if ng > 1 and batch_size:  # check that batch_size is compatible with device_count
-            assert batch_size % ng == 0, 'batch-size %g not multiple of GPU count %g' % (batch_size, ng)
-        x = [torch.cuda.get_device_properties(i) for i in range(ng)]
 
-        s = 'Using CUDA ' + ('Apex ' if apex else '')  # apex for mixed precision https://github.com/NVIDIA/apex
-        for i in range(0, ng):
-            if i == 1:
-                s = ' ' * len(s)
-            print("%sdevice%g _CudaDeviceProperties(name='%s', total_memory=%dMB)" %
-                  (s, i, x[i].name, x[i].total_memory / c))
-    else:
-        print('Using CPU')
+    c = 1024 ** 2  # bytes to MB
+    ng = torch.cuda.device_count()
+    if ng > 1 and batch_size:  # check that batch_size is compatible with device_count
+        assert batch_size % ng == 0, 'batch-size %g not multiple of GPU count %g' % (batch_size, ng)
+    x = [torch.cuda.get_device_properties(i) for i in range(ng)]
 
-    print('')  # skip a line
+    s = 'Using CUDA ' + ('Apex ' if apex else '')  # apex for mixed precision https://github.com/NVIDIA/apex
+    for i in range(0, ng):
+        if i == 1:
+            s = ' ' * len(s)
+        # print("%sdevice%g _CudaDeviceProperties(name='%s', total_memory=%dMB)" %
+        #       (s, i, x[i].name, x[i].total_memory / c))
+
     return torch.device('cuda:0' if cuda else 'cpu')
 
 
@@ -139,7 +136,7 @@ def model_info(model, verbose=False):
     except:
         fs = ''
 
-    print('Model Summary: %g layers, %g parameters, %g gradients%s' % (len(list(model.parameters())), n_p, n_g, fs))
+    # print('Model Summary: %g layers, %g parameters, %g gradients%s' % (len(list(model.parameters())), n_p, n_g, fs))
 
 
 def load_classifier(name='resnet101', n=2):

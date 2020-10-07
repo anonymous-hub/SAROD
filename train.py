@@ -45,7 +45,6 @@ if __name__ == '__main__':
         "local_rank": -1
     })
 
-
     fine_opt_eval = easydict.EasyDict({
         "data": "yolov5/data/HRSID_800_rl.yaml",
         "batch_size": 1,
@@ -76,7 +75,6 @@ if __name__ == '__main__':
         "sync_bn": False,
         "local_rank": -1
     })
-
 
     coarse_opt_eval = easydict.EasyDict({
         "data": "yolov5/data/HRSID_800_rl.yaml",
