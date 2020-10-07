@@ -63,12 +63,25 @@ pip install -r requirements.txt
 ## Train
 refer to 'demo_training.ipynb'
 ```
-!python train.py --epochs 50 --detector_batch_size 32 --device 0 --test_epoch 10 --eval_epoch 5
+!python train.py --epochs 10\
+--detector_batch_size 4\
+--device 2\
+--test_epoch 1\
+--eval_epoch 1\
+--step_batch_size 2\
+--save_path save
 ```
 
 ## Evaluation
 refer to 'demo_evaluation.ipynb'
 ```
-!python test.py --epochs 50 --detector_batch_size 32 --device 0 --test_epoch 10 --eval_epoch 5
+!python test.py --epochs 1\
+--detector_batch_size 1\
+--device 0\
+--test_epoch 1\
+--eval_epoch 1\
+--rl_weight SAROD_RL\
+--h_detector_weight yolov5_480.pt\
+--l_detector_weight yolov5_96.p
 ```
 
