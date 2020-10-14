@@ -55,10 +55,8 @@ cd ..
 ```
 
 
-## Setup
-```
-pip install -r requirements.txt
-```
+## Visualization
+refer to 'demo_visualization.ipynb'
 
 ## Train
 refer to 'demo_training.ipynb'
