@@ -204,7 +204,6 @@ class EfficientOD():
             if self.epoch % 10 == 0:
                 torch.save(state, self.opt.cv_dir + '/ckpt_E_{}'.format(self.epoch))
 
-
     def eval(self, epoch, test_fine, test_coarse):
 
         self.test_fine = test_fine
@@ -294,7 +293,6 @@ class EfficientOD():
         # if self.epoch % 5 == 0:
         #     torch.save(state, self.opt.cv_dir+'/ckpt_E_%d_R_%.2E'%(self.epoch, reward))
 
-
     def test(self, epoch, test_fine, test_coarse):
 
         self.test_fine = test_fine
@@ -372,7 +370,6 @@ class EfficientOD():
         with open(self.opt.cv_dir+'/rl_test.txt', 'a') as f:
             f.write(str(result)+'\n')
 
-
     def test_wip(self, fine_detector, coarse_detector):
 
         self.agent.eval()
@@ -397,46 +394,73 @@ class EfficientOD():
             policy[policy >= 0.5] = 1.0
             policy = Variable(policy)
 
-            for ind in range(4):
-                f_stats = fine_detector.test(inputs, label_path, ind)
-                for stats in f_stats:
-                    f_stats_list.append(stats)
+            for ind, i in enumerate(policy.cpu().data[0]):
+                efficiency.append(i)
+                if i == 0:
+                    c_stats = coarse_detector.test(inputs, label_path, ind)
+                    for c_stat in c_stats:
+                        # stats_list.append((torch.squeeze(stats[0], 0), torch.squeeze(stats[1], 0),
+                        #                    torch.squeeze(stats[2], 0), stats[3]))
+                        c_stats_list.append(c_stat)
+                        stats_list.append(c_stat)
+                elif i == 1:
+                    f_stats = fine_detector.test(inputs, label_path, ind)
+                    for f_stat in f_stats:
+                        # stats_list.append((torch.squeeze(stats[0], 0), torch.squeeze(stats[1], 0),
+                        #                    torch.squeeze(stats[2], 0), stats[3]))
+                        f_stats_list.append(f_stat)
+                        stats_list.append(f_stat)
 
-            # for ind, i in enumerate(policy.cpu().data[0]):
-            #     efficiency.append(i)
-            #     if i == 0:
-            #         c_stats = coarse_detector.test(inputs, label_path, ind)
-            #         for stats in c_stats:
-            #             # stats_list.append((torch.squeeze(stats[0], 0), torch.squeeze(stats[1], 0),
-            #             #                    torch.squeeze(stats[2], 0), stats[3]))
-            #             c_stats_list.append(stats)
-            #             stats_list.append(stats)
-            #     elif i == 1:
-            #         f_stats = fine_detector.test(inputs, label_path, ind)
-            #         for stats in f_stats:
-            #             # stats_list.append((torch.squeeze(stats[0], 0), torch.squeeze(stats[1], 0),
-            #             #                    torch.squeeze(stats[2], 0), stats[3]))
-            #             f_stats_list.append(stats)
-            #             stats_list.append(stats)
-            #
-            # policies.append(policy.data)
+            policies.append(policy.data)
 
-        # cal_stats_list = [np.concatenate(x, 0) for x in zip(*stats_list)]
-        # c_cal_stats_list = [np.concatenate(x, 0) for x in zip(*c_stats_list)]
+        cal_stats_list = [np.concatenate(x, 0) for x in zip(*stats_list)]
+        c_cal_stats_list = [np.concatenate(x, 0) for x in zip(*c_stats_list)]
         f_cal_stats_list = [np.concatenate(x, 0) for x in zip(*f_stats_list)]
-        # if len(cal_stats_list) and cal_stats_list[0].any():
-        #     p, r, ap, f1, ap_class = yoloutil.ap_per_class(*cal_stats_list)
-        #     p, r, ap50, ap = p[:, 0], r[:, 0], ap[:, 0], ap.mean(1)  # [P, R, AP@0.5, AP@0.5:0.95]
-        #     mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
-        # if len(c_cal_stats_list) and c_cal_stats_list[0].any():
-        #     c_p, c_r, c_ap, c_f1, c_ap_class = yoloutil.ap_per_class(*c_cal_stats_list)
-        #     c_p, c_r, c_ap50, c_ap = c_p[:, 0], c_r[:, 0], c_ap[:, 0], c_ap.mean(1)  # [P, R, AP@0.5, AP@0.5:0.95]
-        #     c_mp, c_mr, c_map50, c_map = c_p.mean(), c_r.mean(), c_ap50.mean(), c_ap.mean()
+        if len(cal_stats_list) and cal_stats_list[0].any():
+            p, r, ap, f1, ap_class = yoloutil.ap_per_class(*cal_stats_list)
+            p, r, ap50, ap = p[:, 0], r[:, 0], ap[:, 0], ap.mean(1)  # [P, R, AP@0.5, AP@0.5:0.95]
+            mp, mr, map50, map = p.mean(), r.mean(), ap50.mean(), ap.mean()
+        if len(c_cal_stats_list) and c_cal_stats_list[0].any():
+            c_p, c_r, c_ap, c_f1, c_ap_class = yoloutil.ap_per_class(*c_cal_stats_list)
+            c_p, c_r, c_ap50, c_ap = c_p[:, 0], c_r[:, 0], c_ap[:, 0], c_ap.mean(1)  # [P, R, AP@0.5, AP@0.5:0.95]
+            c_mp, c_mr, c_map50, c_map = c_p.mean(), c_r.mean(), c_ap50.mean(), c_ap.mean()
         if len(f_cal_stats_list) and f_cal_stats_list[0].any():
             f_p, f_r, f_ap, f_f1, f_ap_class = yoloutil.ap_per_class(*f_cal_stats_list)
             f_p, f_r, f_ap50, f_ap = f_p[:, 0], f_r[:, 0], f_ap[:, 0], f_ap.mean(1)  # [P, R, AP@0.5, AP@0.5:0.95]
             f_mp, f_mr, f_map50, f_map = f_p.mean(), f_r.mean(), f_ap50.mean(), f_ap.mean()
 
-        print('Fine Detector AP: {}'.format(f_map50))
-        # print('Coarse Detector AP: {} / Fine Detector AP: {}'.format(c_map50, f_map50))
-        # print('RL Test AP: {} / Efficiency: {} '.format(map50, sum(efficiency)/len(efficiency)))
+        # print('Fine Detector AP: {}'.format(f_map50))
+        print('Coarse Detector AP: {} / Fine Detector AP: {}'.format(c_map50, f_map50))
+        print('RL Test AP: {} / Efficiency: {} '.format(map50, sum(efficiency)/len(efficiency)))
+
+    def visualization(self, fine_detector, coarse_detector):
+
+        self.agent.eval()
+
+        testset = utils_ete.get_dataset_test(self.opt.img_size, img_path=self.opt.test_path)
+        testloader = torchdata.DataLoader(testset, batch_size=self.opt.batch_size, shuffle=True,
+                                          num_workers=self.opt.num_workers)
+
+        result = {}
+        for batch_idx, (inputs, label_path) in tqdm.tqdm(enumerate(testloader), total=len(testloader)):
+            inputs = Variable(inputs, volatile=True)
+            # if not self.opt.parallel:
+
+            inputs = torch.tensor(inputs).cuda()
+
+            # Actions by the Policy Network
+            probs = F.sigmoid(self.agent(inputs))
+
+            # Sample the policy from the agents output
+            policy = probs.data.clone()
+            policy[policy < 0.5] = 0.0
+            policy[policy >= 0.5] = 1.0
+            policy = Variable(policy)
+
+            for ind, i in enumerate(policy.cpu().data[0]):
+                # print('policy', ind, i)
+                if i == 0:
+                    coarse_detector.test(inputs, label_path, ind, i)
+
+                elif i == 1:
+                    fine_detector.test(inputs, label_path, ind, i)

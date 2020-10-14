@@ -292,6 +292,7 @@ if __name__ == '__main__':
 def test_rl(inputs,
             label_path,
             ind,
+            policy,
             weights=None,
             device=0,
             batch_size=1,
@@ -358,6 +359,7 @@ def test_rl(inputs,
     p, r, f1, mp, mr, map50, map, t0, t1 = 0., 0., 0., 0., 0., 0., 0., 0., 0.
     jdict, stats, ap, ap_class = [], [], [], []
     for batch_i, (img, targets, paths, shapes) in enumerate(dataloader):
+
         img = img.to(device, non_blocking=True)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -419,8 +421,18 @@ def test_rl(inputs,
                                 correct[pi[j]] = ious[j] > iouv  # iou_thres is 1xn
                                 if len(detected) == nl:  # all targets already located in image
                                     break
-
             # Append statistics (correct, conf, pcls, tcls)
             stats.append((correct.cpu(), pred[:, 4].cpu(), pred[:, 5].cpu(), tcls))
+
+        if batch_i == 0:
+            f = 'image/visualization/{}_{}_{}_gt.jpg'.format(int(policy),
+                                                             label_path[0].split('/')[-1].replace('.txt', ''),
+                                                             ind)  # filename
+            plot_images(img, targets, paths, str(f))  # ground truth
+            f = 'image/visualization/{}_{}_{}_pred.jpg'.format(int(policy),
+                                                               label_path[0].split('/')[-1].replace('.txt', ''),
+                                                               ind)  # filename
+            plot_images(img, output_to_target(output, width, height), paths, str(f))  # predictions
+
 
     return stats

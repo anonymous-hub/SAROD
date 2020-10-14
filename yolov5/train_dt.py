@@ -450,8 +450,8 @@ class yolov5():
 
         return results
 
-    def test(self, inputs, label_path, ind):
-        results = test.test_rl(inputs, label_path, ind, weights=self.opt.weights, device=self.opt.device, batch_size=self.total_batch_size, imgsz=self.imgsz_test,
+    def test(self, inputs, label_path, ind, i):
+        results = test.test_rl(inputs, label_path, ind, i, weights=self.opt.weights, device=self.opt.device, batch_size=self.total_batch_size, imgsz=self.imgsz_test,
                                      model=self.ema.ema.module if hasattr(self.ema.ema, 'module') else self.ema.ema,
                                      single_cls=self.opt.single_cls)
 
